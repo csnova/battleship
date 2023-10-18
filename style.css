@@ -1,0 +1,72 @@
+@font-face {
+    font-family: blackOps;
+    src: url(./BlackOpsOne-Regular.ttf);
+}
+
+:root {
+    --darkOrange: #693205;
+    --lightOrange: #e67b24;
+    --darkBlue: #000024;
+    --lighterBlue: #0000ad;
+    --lightBorderColor: #ffffff;
+    --squareDarkColor: #4e4b4b;
+    --squareLightColor: #757070;
+    --squareShadow: #302d2d;
+}
+
+html {
+    background: linear-gradient(var(--darkBlue), var(--lighterBlue));
+    background-attachment: fixed;
+}
+
+* {
+    font-family: blackOps;
+}
+
+#title {
+    text-align: center;
+    font-size: 90px;
+    font-weight: 100;
+    background: -webkit-linear-gradient(var(--darkOrange), var(--lightOrange));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+#playBoards {
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+}
+
+#fleet,
+#enemyFleet {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-width: 635px;
+}
+
+#fleetTitle,
+#enemyFleetTitle {
+    color: var(--lightBorderColor);
+    font-size: 32px;
+    font-weight: 100;
+    text-shadow: 2px 1px var(--lightOrange);
+}
+
+#gameboard,
+#enemyGameboard {
+    display: grid;
+    grid-template-columns: repeat(10, 60px);
+    grid-template-rows: repeat(10, 60px);
+    background: linear-gradient(var(--squareDarkColor), var(--squareLightColor));
+}
+
+.playerSquares,
+.enemySquares {
+    border: 1px solid var(--lightBorderColor);
+    box-shadow: 5px 5px var(--squareShadow);
+}

@@ -1276,3 +1276,44 @@ test("Does Computer getting a miss get recorded", () => {
     null,
   ]);
 });
+
+test("Does Computer return when move is invalid? (already missed)", () => {
+  let gameBoard = new GameBoard();
+  gameBoard.placeShip("carrier", 5, "y", 22);
+  gameBoard.placeShip("battleship", 4, "x", 83);
+  gameBoard.placeShip("destroyer", 3, "x", 35);
+  gameBoard.placeShip("submarine", 3, "x", 5);
+  gameBoard.placeShip("patrolBoat", 2, "y", 58);
+  let computerBoard = new GameBoard();
+  computerBoard.placeShip("carrier", 5, "x", 53);
+  computerBoard.placeShip("battleship", 4, "y", 18);
+  computerBoard.placeShip("destroyer", 3, "x", 21);
+  computerBoard.placeShip("submarine", 3, "y", 61);
+  computerBoard.placeShip("patrolBoat", 2, "x", 86);
+  let player = new Player();
+  player.playerTurn(10, computerBoard)
+  player.computerTurn(10, gameBoard)
+  player.playerTurn(15, computerBoard)
+  expect(player.computerTurn(10, gameBoard)).toBe("invalid move");
+});
+
+test("Does Computer return when move is invalid? (already hit)", () => {
+  let gameBoard = new GameBoard();
+  gameBoard.placeShip("carrier", 5, "y", 22);
+  gameBoard.placeShip("battleship", 4, "x", 83);
+  gameBoard.placeShip("destroyer", 3, "x", 35);
+  gameBoard.placeShip("submarine", 3, "x", 5);
+  gameBoard.placeShip("patrolBoat", 2, "y", 58);
+  let computerBoard = new GameBoard();
+  computerBoard.placeShip("carrier", 5, "x", 53);
+  computerBoard.placeShip("battleship", 4, "y", 18);
+  computerBoard.placeShip("destroyer", 3, "x", 21);
+  computerBoard.placeShip("submarine", 3, "y", 61);
+  computerBoard.placeShip("patrolBoat", 2, "x", 86);
+  let player = new Player();
+  player.playerTurn(10, computerBoard)
+  player.computerTurn(83, gameBoard)
+  player.playerTurn(15, computerBoard)
+  expect(player.computerTurn(83, gameBoard)).toBe("invalid move");
+});
+

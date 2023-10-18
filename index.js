@@ -112,15 +112,49 @@ class Player {
 
   computerTurn(location, gameBoard) {
     if (this.turn === "computer") {
-      gameBoard.receiveAttack(location)
+      if (gameBoard.gameBoard[location] === "hit" || gameBoard.gameBoard[location] === "miss") {
+        return "invalid move"
+      } else {
+        gameBoard.receiveAttack(location)
+        this.turn = "player"
+        return "valid"
+      }
     }
-    this.turn = "player"
   }
 
+  getRandomLocation() {
+    let ranNumber = Math.floor(Math.random() * 100);
+    return ranNumber
+  }
 }
 
-module.exports = {
-  Ship,
-  GameBoard,
-  Player,
-};
+function displayEmptyGameboard(parentId, idName, className) {
+  const playerBoard = document.getElementById(`${parentId}`)
+  for (let i = 0; i < 100; i++) {
+    const divSquare = document.createElement("div");
+    divSquare.setAttribute(`id`, `${idName}${i}`);
+    divSquare.classList.add(`${className}`);
+    playerBoard.appendChild(divSquare);
+  }
+}
+
+function displayGameboard(board, idName) {
+  for (let i = 0; i < 100; i++) {
+    const currentValue = board.gameBoard[i];
+    const square = document.getElementById(`${idName}${i}`)
+    if (currentValue !== null) {
+      square.classList.add(`${currentValue}`);
+    }
+  }
+}
+
+displayEmptyGameboard("gameboard", "square", "playerSquares");
+displayEmptyGameboard("enemyGameboard", "enemySquare", "enemySquares");
+
+
+
+// module.exports = {
+//   Ship,
+//   GameBoard,
+//   Player,
+// };
