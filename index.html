@@ -1,26 +1,54 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Battleship!</title>
-    <link rel="stylesheet" href="style.css">
-</head>
+    <link rel="stylesheet" href="style.css" />
+  </head>
 
-<body>
+  <body>
     <h1 id="title">Battleship</h1>
-    <div id="playBoards">
-        <div id="fleet">
-            <h2 id="fleetTitle">Your Fleet</h2>
-            <div id="gameboard"></div>
+    <div id="messageBox">
+      <div id="messages">
+        <div id="scoreBox">
+          <div id="playerBox">
+            <div id="playerTitle">
+              <p>Your Fleet</p>
+            </div>
+            <div id="playerSunk">
+              <p id="playerSunkText">Ships Sunk:</p>
+              <p id="squareSunk"></p>
+            </div>
+          </div>
+          <div id="enemyBox">
+            <div id="enemyTitle">
+              <p>Enemy Fleet</p>
+            </div>
+            <div id="enemySunk">
+              <p id="enemySunkText">Ships Sunk:</p>
+              <p id="enemySquareSunk"></p>
+            </div>
+          </div>
         </div>
-        <div id="enemyFleet">
-            <h2 id="enemyFleetTitle">Enemy Fleet</h2>
-            <div id="enemyGameboard"></div>
+        <div id="currentMessageBox">
+          <p id="currentMessage">
+            Click A Location on the Enemy Fleet to Start!
+          </p>
         </div>
+      </div>
     </div>
-</body>
-<script src="./index.js"></script>
 
+    <div id="playBoards">
+      <div id="fleet">
+        <h2 id="fleetTitle">Your Fleet</h2>
+        <div id="gameboard"></div>
+      </div>
+      <div id="enemyFleet">
+        <h2 id="enemyFleetTitle">Enemy Fleet</h2>
+        <div id="enemyGameboard"></div>
+      </div>
+    </div>
+  </body>
+  <script src="./index.js"></script>
 </html>
