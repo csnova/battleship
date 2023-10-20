@@ -1,3 +1,4 @@
+// Used to create and store infromation about each ship
 class Ship {
   constructor(size, hits = 0, sunk = false) {
     this.size = size;
@@ -16,6 +17,10 @@ class Ship {
   }
 }
 
+// Used to create a gameboard for player and computer
+// Has methods to place ships, recieve attacks/send hits to ships,
+// idenitfy when all ships have been sunk, display the current gameboard,
+// randomly place ships in in legal locations.
 class GameBoard {
   constructor() {
     this.gameBoard = new Array(100).fill(null);
@@ -255,7 +260,6 @@ class GameBoard {
         this.checkDestroyerPlacement();
       }
       // If the boat wont fit it starts over with a new location
-      this.placeShip("destroyer", 3, "y", ranNumber);
     } else this.checkDestroyerPlacement();
   }
 
@@ -362,6 +366,9 @@ class GameBoard {
   }
 }
 
+// Used to run game and keep track of turn order
+// Has methods to conduct a players turn, conduct the computers turn,
+// control flow of game, have a game over screen, and restart when over
 class Player {
   constructor() {
     this.turn = "player";
@@ -439,11 +446,114 @@ class Player {
 
   restart() {
     removeElementsByClass("restartButton");
-    // gameBoard = new GameBoard();
-    // displayEmptyGameboard("gameboard", "square", "playerSquares", true);
+    removeElementsByClass("playerSquares");
+    removeElementsByClass("enemySquares");
+    removeElementsByClass("enemyGameboard");
+    displayStartingScreen();
+    gameBoard = new GameBoard();
+    displayEmptyGameboard("gameboard", "square", "playerSquares", true);
   }
 }
 
+// Used to remove screens when no longer needed,
+// Removes blocks from list after placed, removes starting screen when game has begun,
+// when game over removes event listners so player cant keep playing,
+// used in start over to restet screen.
+function removeElementsByClass(className) {
+  const elements = document.getElementsByClassName(className);
+  while (elements.length > 0) {
+    elements[0].parentNode.removeChild(elements[0]);
+  }
+}
+
+// Used at begining to set up ship palcement mechanic, then again at restart
+function displayStartingScreen() {
+  document.getElementById("squareSunk").textContent = "0";
+  document.getElementById("enemySquareSunk").textContent = "0";
+  document.getElementById("enemyFleetTitle").textContent = "Place Your Fleet";
+  const enemyFleet = document.getElementById("enemyFleet");
+  const startingScreen = document.createElement("div");
+  startingScreen.classList.add("startingScreen");
+  enemyFleet.appendChild(startingScreen);
+  const instructions = document.createElement("p");
+  instructions.setAttribute(`id`, `instructions`);
+  instructions.textContent =
+    "Drag Ships Onto Board (By Front), Double Click to Rotate";
+  startingScreen.appendChild(instructions);
+  const carrierBox = document.createElement("div");
+  carrierBox.classList.add("shipBox");
+  carrierBox.setAttribute(`id`, `carrierBox`);
+  startingScreen.appendChild(carrierBox);
+  const carrierTitle = document.createElement("p");
+  carrierTitle.classList.add("shipTitles");
+  carrierTitle.textContent = "Carrier";
+  carrierBox.appendChild(carrierTitle);
+  const carrierImage = document.createElement("IMG");
+  carrierImage.classList.add("carrierImage");
+  carrierImage.setAttribute(`src`, `./images/carrier.png`);
+  carrierImage.setAttribute(`alt`, `Picture of Carrier`);
+  carrierImage.setAttribute(`draggable`, `true`);
+  carrierBox.appendChild(carrierImage);
+  const battleshipBox = document.createElement("div");
+  battleshipBox.classList.add("shipBox");
+  battleshipBox.setAttribute(`id`, `battleshipBox`);
+  startingScreen.appendChild(battleshipBox);
+  const battleshipTitle = document.createElement("p");
+  battleshipTitle.classList.add("shipTitles");
+  battleshipTitle.textContent = "Battleship";
+  battleshipBox.appendChild(battleshipTitle);
+  const battleshipImage = document.createElement("IMG");
+  battleshipImage.classList.add("battleshipImage");
+  battleshipImage.setAttribute(`src`, `./images/battleship.png`);
+  battleshipImage.setAttribute(`alt`, `Picture of Battleship`);
+  battleshipImage.setAttribute(`draggable`, `true`);
+  battleshipBox.appendChild(battleshipImage);
+  const destroyerBox = document.createElement("div");
+  destroyerBox.classList.add("shipBox");
+  destroyerBox.setAttribute(`id`, `destroyerBox`);
+  startingScreen.appendChild(destroyerBox);
+  const destroyerTitle = document.createElement("p");
+  destroyerTitle.classList.add("shipTitles");
+  destroyerTitle.textContent = "Destroyer";
+  destroyerBox.appendChild(destroyerTitle);
+  const destroyerImage = document.createElement("IMG");
+  destroyerImage.classList.add("destroyerImage");
+  destroyerImage.setAttribute(`src`, `./images/destroyer.png`);
+  destroyerImage.setAttribute(`alt`, `Picture of Destroyer`);
+  destroyerImage.setAttribute(`draggable`, `true`);
+  destroyerBox.appendChild(destroyerImage);
+  const submarineBox = document.createElement("div");
+  submarineBox.classList.add("shipBox");
+  submarineBox.setAttribute(`id`, `submarineBox`);
+  startingScreen.appendChild(submarineBox);
+  const submarineTitle = document.createElement("p");
+  submarineTitle.classList.add("shipTitles");
+  submarineTitle.textContent = "Submarine";
+  submarineBox.appendChild(submarineTitle);
+  const submarineImage = document.createElement("IMG");
+  submarineImage.classList.add("submarineImage");
+  submarineImage.setAttribute(`src`, `./images/submarine.png`);
+  submarineImage.setAttribute(`alt`, `Picture of Submarine`);
+  submarineImage.setAttribute(`draggable`, `true`);
+  submarineBox.appendChild(submarineImage);
+  const patrolBoatBox = document.createElement("div");
+  patrolBoatBox.classList.add("shipBox");
+  patrolBoatBox.setAttribute(`id`, `patrolBoatBox`);
+  startingScreen.appendChild(patrolBoatBox);
+  const patrolBoatTitle = document.createElement("p");
+  patrolBoatTitle.classList.add("shipTitles");
+  patrolBoatTitle.textContent = "Patrol Boat";
+  patrolBoatBox.appendChild(patrolBoatTitle);
+  const patrolBoatImage = document.createElement("IMG");
+  patrolBoatImage.classList.add("patrolBoatImage");
+  patrolBoatImage.setAttribute(`src`, `./images/patrolBoat.png`);
+  patrolBoatImage.setAttribute(`alt`, `Picture of Patrol Boat`);
+  patrolBoatImage.setAttribute(`draggable`, `true`);
+  patrolBoatBox.appendChild(patrolBoatImage);
+}
+
+// Display the players empty board to place ships
+// Adds ondrop and on dragover to allow drag and drop
 function displayEmptyGameboard(parentId, idName, className, visible) {
   const playerBoard = document.getElementById(`${parentId}`);
   for (let i = 0; i < 100; i++) {
@@ -464,34 +574,23 @@ function displayEmptyGameboard(parentId, idName, className, visible) {
   }
 }
 
-function removeElementsByClass(className) {
-  const elements = document.getElementsByClassName(className);
-  while (elements.length > 0) {
-    elements[0].parentNode.removeChild(elements[0]);
-  }
-}
-
 function createEnemyBoard() {
+  document.getElementById("enemyFleetTitle").textContent = "Enemy Fleet";
   const enemyFleet = document.getElementById("enemyFleet");
-  const enemyFleetTitle = document.createElement("h2");
-  enemyFleetTitle.setAttribute(`id`, `enemyFleetTitle`);
-  enemyFleetTitle.textContent = "Enemy Fleet";
-  enemyFleet.appendChild(enemyFleetTitle);
   const enemyGameboard = document.createElement("div");
   enemyGameboard.setAttribute(`id`, `enemyGameboard`);
+  enemyGameboard.classList.add("enemyGameboard");
   enemyFleet.appendChild(enemyGameboard);
   displayEmptyGameboard("enemyGameboard", "enemySquare", "enemySquares", false);
 }
 
 function gameSetUp() {
   let player = new Player();
+  let computerBoard = new GameBoard();
   removeElementsByClass("startingScreen");
-  createEnemyBoard();
-  document.getElementById("squareSunk").textContent = "0";
-  document.getElementById("enemySquareSunk").textContent = "0";
+  createEnemyBoard(computerBoard);
   document.getElementById("currentMessage").textContent =
     "Click A Location on the Enemy Fleet to Start!";
-  let computerBoard = new GameBoard();
   computerBoard.placeCompShips();
   computerBoard.displayGameboard("enemySquare");
   for (let i = 0; i < 100; i++) {
@@ -504,17 +603,17 @@ function gameSetUp() {
   }
 }
 
-function allowDrop(ev) {
-  ev.preventDefault();
+function allowDrop(event) {
+  event.preventDefault();
 }
 
-function drop(ev) {
-  ev.preventDefault();
+function drop(event) {
+  event.preventDefault();
   let direction = "x";
-  let ship = ev.dataTransfer.getData("text");
+  let ship = event.dataTransfer.getData("text");
   ship = ship.slice(44);
   ship = ship.slice(0, -4);
-  let location = ev.target.id;
+  let location = event.target.id;
   location = location.slice(6);
   location = parseInt(location);
   let isValid = true;
@@ -724,7 +823,7 @@ function drop(ev) {
 
 let gameBoard = new GameBoard();
 displayEmptyGameboard("gameboard", "square", "playerSquares", true);
-// gameSetUp();
+displayStartingScreen();
 
 // module.exports = {
 //   Ship,
