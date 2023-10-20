@@ -71,13 +71,14 @@ html {
 }
 
 #playerBox,
-#enemyBox {
+#enemyBox,
+#restartBox {
   flex: 1;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   align-items: center;
-  max-width: 200px;
+  width: 80px;
 }
 
 #playerTitle,
@@ -128,6 +129,31 @@ html {
   font-size: 32px;
   font-weight: 100;
   text-shadow: 2px 1px var(--lightOrange);
+}
+
+.startingScreen p {
+  color: var(--lightBorderColor);
+  font-weight: 100;
+  text-shadow: 1px 1px var(--lightOrange);
+  margin: 20px 0px 0px 0px;
+  font-size: 20px;
+}
+
+img {
+  height: 60px;
+  width: auto;
+}
+
+.shipTitles {
+  text-decoration: underline;
+}
+
+#carrierBox,
+#battleshipBox,
+#destroyerBox,
+#submarineBox,
+#patrolBoatBox {
+  height: 90px;
 }
 
 #gameboard,

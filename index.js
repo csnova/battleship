@@ -25,6 +25,7 @@ class GameBoard {
     this.submarine = "";
     this.patrolBoat = "";
     this.sunkShips = 0;
+    this.placedShips = 0;
   }
 
   placeShip(name, size, direction, location) {
@@ -57,6 +58,7 @@ class GameBoard {
         currentLocation = currentLocation + 10;
       }
     }
+    this.placedShips++;
   }
 
   receiveAttack(location) {
@@ -415,7 +417,7 @@ class Player {
     for (let i = 0; i < 100; i++) {
       document.getElementById(`enemySquare${i}`).classList.add("visible");
     }
-    this.removeElementsByClass("inner");
+    removeElementsByClass("inner");
     const textBox = document.getElementById("currentMessage");
     if (loser === "player") {
       textBox.textContent =
@@ -428,13 +430,6 @@ class Player {
       textBox.style.color = "#5684e7";
     }
   }
-
-  removeElementsByClass(className) {
-    const elements = document.getElementsByClassName(className);
-    while (elements.length > 0) {
-      elements[0].parentNode.removeChild(elements[0]);
-    }
-  }
 }
 
 function displayEmptyGameboard(parentId, idName, className, visible) {
@@ -445,6 +440,8 @@ function displayEmptyGameboard(parentId, idName, className, visible) {
     divSquare.classList.add(`${className}`);
     if (visible) {
       divSquare.classList.add("visible");
+      divSquare.setAttribute(`ondrop`, `drop(event)`);
+      divSquare.setAttribute(`ondragover`, `allowDrop(event)`);
     } else {
       const divSquareInner = document.createElement("div");
       divSquareInner.setAttribute(`id`, `${idName}Inner${i}`);
@@ -455,20 +452,36 @@ function displayEmptyGameboard(parentId, idName, className, visible) {
   }
 }
 
+function removeElementsByClass(className) {
+  const elements = document.getElementsByClassName(className);
+  while (elements.length > 0) {
+    elements[0].parentNode.removeChild(elements[0]);
+  }
+}
+
+function createEnemyBoard() {
+  const enemyFleet = document.getElementById("enemyFleet");
+  const enemyFleetTitle = document.createElement("h2");
+  enemyFleetTitle.setAttribute(`id`, `enemyFleetTitle`);
+  enemyFleetTitle.textContent = "Enemy Fleet";
+  enemyFleet.appendChild(enemyFleetTitle);
+  const enemyGameboard = document.createElement("div");
+  enemyGameboard.setAttribute(`id`, `enemyGameboard`);
+  enemyFleet.appendChild(enemyGameboard);
+  displayEmptyGameboard("enemyGameboard", "enemySquare", "enemySquares", false);
+}
+
 function gameSetUp() {
+  let player = new Player();
+  removeElementsByClass("startingScreen");
+  createEnemyBoard();
   document.getElementById("squareSunk").textContent = "0";
   document.getElementById("enemySquareSunk").textContent = "0";
-  let gameBoard = new GameBoard();
-  gameBoard.placeShip("carrier", 5, "y", 22);
-  gameBoard.placeShip("battleship", 4, "x", 83);
-  gameBoard.placeShip("destroyer", 3, "x", 35);
-  gameBoard.placeShip("submarine", 3, "x", 5);
-  gameBoard.placeShip("patrolBoat", 2, "y", 58);
-  gameBoard.displayGameboard("square");
+  document.getElementById("currentMessage").textContent =
+    "Click A Location on the Enemy Fleet to Start!";
   let computerBoard = new GameBoard();
   computerBoard.placeCompShips();
   computerBoard.displayGameboard("enemySquare");
-  let player = new Player();
   for (let i = 0; i < 100; i++) {
     const currentIndex = i;
     const square = document.getElementById(`enemySquareInner${i}`);
@@ -478,10 +491,228 @@ function gameSetUp() {
     });
   }
 }
-displayEmptyGameboard("gameboard", "square", "playerSquares", true);
-displayEmptyGameboard("enemyGameboard", "enemySquare", "enemySquares", false);
 
-gameSetUp();
+function allowDrop(ev) {
+  ev.preventDefault();
+}
+
+function drop(ev) {
+  ev.preventDefault();
+  let direction = "x";
+  let ship = ev.dataTransfer.getData("text");
+  ship = ship.slice(44);
+  ship = ship.slice(0, -4);
+  let location = ev.target.id;
+  location = location.slice(6);
+  location = parseInt(location);
+  let isValid = true;
+  let currentLocation = location;
+  if (ship === "carrier") {
+    // Checks to make sure the boat will fit (x)
+    if (
+      direction === "x" &&
+      ((location <= 95 && location >= 90) ||
+        (location <= 85 && location >= 80) ||
+        (location <= 75 && location >= 70) ||
+        (location <= 65 && location >= 60) ||
+        (location <= 55 && location >= 50) ||
+        (location <= 45 && location >= 40) ||
+        (location <= 35 && location >= 30) ||
+        (location <= 25 && location >= 20) ||
+        (location <= 15 && location >= 10) ||
+        location <= 5)
+    ) {
+      // Checks to make sure another boat is not already here (x)
+      for (let i = 0; i < 5; i++) {
+        currentLocation = location + i;
+        if (gameBoard.gameBoard[currentLocation] != null) isValid = false;
+      }
+      if (isValid === true) {
+        gameBoard.placeShip("carrier", 5, "x", location);
+      } else {
+        return; // If there is a boat doesnt continue
+      }
+      // Checks to make sure the boat will fit (y)
+    } else if (direction === "y" && location <= 59) {
+      // Checks to make sure another boat is not already here (y)
+      for (let i = 0; i < 5; i++) {
+        if (gameBoard.gameBoard[currentLocation] != null) isValid = false;
+        currentLocation = currentLocation + 10;
+      }
+      if (isValid === true) {
+        gameBoard.placeShip("carrier", 5, "y", location);
+      } else {
+        return; // If there is a boat it doesnt continue
+      }
+    } else return; // If the boat wont fit it doesnt continue
+  }
+  if (ship === "battleship") {
+    // Checks to make sure the boat will fit (x)
+    if (
+      direction === "x" &&
+      ((location <= 96 && location >= 90) ||
+        (location <= 86 && location >= 80) ||
+        (location <= 76 && location >= 70) ||
+        (location <= 66 && location >= 60) ||
+        (location <= 56 && location >= 50) ||
+        (location <= 46 && location >= 40) ||
+        (location <= 36 && location >= 30) ||
+        (location <= 26 && location >= 20) ||
+        (location <= 16 && location >= 10) ||
+        location <= 6)
+    ) {
+      // Checks to make sure another boat is not already here (x)
+      for (let i = 0; i < 4; i++) {
+        currentLocation = location + i;
+        if (gameBoard.gameBoard[currentLocation] != null) isValid = false;
+      }
+      if (isValid === true) {
+        gameBoard.placeShip("battleship", 4, "x", location);
+      } else {
+        return; // If there is a boat doesnt continue
+      }
+      // Checks to make sure the boat will fit (y)
+    } else if (direction === "y" && location <= 69) {
+      // Checks to make sure another boat is not already here (y)
+      for (let i = 0; i < 4; i++) {
+        if (gameBoard.gameBoard[currentLocation] != null) isValid = false;
+        currentLocation = currentLocation + 10;
+      }
+      if (isValid === true) {
+        gameBoard.placeShip("battleship", 4, "y", location);
+      } else {
+        return; // If there is a boat it doesnt continue
+      }
+    } else return; // If the boat wont fit it doesnt continue
+  }
+  if (ship === "destroyer") {
+    // Checks to make sure the boat will fit (x)
+    if (
+      direction === "x" &&
+      ((location <= 97 && location >= 90) ||
+        (location <= 87 && location >= 80) ||
+        (location <= 77 && location >= 70) ||
+        (location <= 67 && location >= 60) ||
+        (location <= 57 && location >= 50) ||
+        (location <= 47 && location >= 40) ||
+        (location <= 37 && location >= 30) ||
+        (location <= 27 && location >= 20) ||
+        (location <= 17 && location >= 10) ||
+        location <= 7)
+    ) {
+      // Checks to make sure another boat is not already here (x)
+      for (let i = 0; i < 3; i++) {
+        currentLocation = location + i;
+        if (gameBoard.gameBoard[currentLocation] != null) isValid = false;
+      }
+      if (isValid === true) {
+        gameBoard.placeShip("destroyer", 3, "x", location);
+      } else {
+        return; // If there is a boat doesnt continue
+      }
+      // Checks to make sure the boat will fit (y)
+    } else if (direction === "y" && location <= 79) {
+      // Checks to make sure another boat is not already here (y)
+      for (let i = 0; i < 3; i++) {
+        if (gameBoard.gameBoard[currentLocation] != null) isValid = false;
+        currentLocation = currentLocation + 10;
+      }
+      if (isValid === true) {
+        gameBoard.placeShip("destroyer", 3, "y", location);
+      } else {
+        return; // If there is a boat it doesnt continue
+      }
+    } else return; // If the boat wont fit it doesnt continue
+  }
+  if (ship === "submarine") {
+    // Checks to make sure the boat will fit (x)
+    if (
+      direction === "x" &&
+      ((location <= 97 && location >= 90) ||
+        (location <= 87 && location >= 80) ||
+        (location <= 77 && location >= 70) ||
+        (location <= 67 && location >= 60) ||
+        (location <= 57 && location >= 50) ||
+        (location <= 47 && location >= 40) ||
+        (location <= 37 && location >= 30) ||
+        (location <= 27 && location >= 20) ||
+        (location <= 17 && location >= 10) ||
+        location <= 7)
+    ) {
+      // Checks to make sure another boat is not already here (x)
+      for (let i = 0; i < 3; i++) {
+        currentLocation = location + i;
+        if (gameBoard.gameBoard[currentLocation] != null) isValid = false;
+      }
+      if (isValid === true) {
+        gameBoard.placeShip("submarine", 3, "x", location);
+      } else {
+        return; // If there is a boat doesnt continue
+      }
+      // Checks to make sure the boat will fit (y)
+    } else if (direction === "y" && location <= 79) {
+      // Checks to make sure another boat is not already here (y)
+      for (let i = 0; i < 3; i++) {
+        if (gameBoard.gameBoard[currentLocation] != null) isValid = false;
+        currentLocation = currentLocation + 10;
+      }
+      if (isValid === true) {
+        gameBoard.placeShip("submarine", 3, "y", location);
+      } else {
+        return; // If there is a boat it doesnt continue
+      }
+    } else return; // If the boat wont fit it doesnt continue
+  }
+  if (ship === "patrolBoat") {
+    // Checks to make sure the boat will fit (x)
+    if (
+      direction === "x" &&
+      ((location <= 98 && location >= 90) ||
+        (location <= 88 && location >= 80) ||
+        (location <= 78 && location >= 70) ||
+        (location <= 68 && location >= 60) ||
+        (location <= 58 && location >= 50) ||
+        (location <= 48 && location >= 40) ||
+        (location <= 38 && location >= 30) ||
+        (location <= 28 && location >= 20) ||
+        (location <= 18 && location >= 10) ||
+        location <= 8)
+    ) {
+      // Checks to make sure another boat is not already here (x)
+      for (let i = 0; i < 2; i++) {
+        currentLocation = location + i;
+        if (gameBoard.gameBoard[currentLocation] != null) isValid = false;
+      }
+      if (isValid === true) {
+        gameBoard.placeShip("patrolBoat", 2, "x", location);
+      } else {
+        return; // If there is a boat doesnt continue
+      }
+      // Checks to make sure the boat will fit (y)
+    } else if (direction === "y" && location <= 89) {
+      // Checks to make sure another boat is not already here (y)
+      for (let i = 0; i < 2; i++) {
+        if (gameBoard.gameBoard[currentLocation] != null) isValid = false;
+        currentLocation = currentLocation + 10;
+      }
+      if (isValid === true) {
+        gameBoard.placeShip("patrolBoat", 2, "y", location);
+      } else {
+        return; // If there is a boat it doesnt continue
+      }
+    } else return; // If the boat wont fit it doesnt continue
+  }
+  gameBoard.displayGameboard("square");
+  removeElementsByClass(`${ship}Image`);
+  const placedShips = gameBoard.placedShips;
+  if (placedShips >= 5) {
+    gameSetUp();
+  }
+}
+
+let gameBoard = new GameBoard();
+displayEmptyGameboard("gameboard", "square", "playerSquares", true);
+// gameSetUp();
 
 // module.exports = {
 //   Ship,

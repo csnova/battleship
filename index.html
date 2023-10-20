@@ -21,6 +21,7 @@
               <p id="squareSunk"></p>
             </div>
           </div>
+          <div id="restartBox"></div>
           <div id="enemyBox">
             <div id="enemyTitle">
               <p>Enemy Fleet</p>
@@ -32,9 +33,7 @@
           </div>
         </div>
         <div id="currentMessageBox">
-          <p id="currentMessage">
-            Click A Location on the Enemy Fleet to Start!
-          </p>
+          <p id="currentMessage"></p>
         </div>
       </div>
     </div>
@@ -45,8 +44,57 @@
         <div id="gameboard"></div>
       </div>
       <div id="enemyFleet">
-        <h2 id="enemyFleetTitle">Enemy Fleet</h2>
-        <div id="enemyGameboard"></div>
+        <div class="startingScreen">
+          <h2 id="enemyFleetTitle">Place Your Fleet</h2>
+          <p id="instructions">
+            Drag Ships Onto Board (By Front), Double Click to Rotate
+          </p>
+          <div id="carrierBox" class="shipBox">
+            <p class="shipTitles">Carrier</p>
+            <img
+              src="./images/carrier.png"
+              alt="Picture of Carrier"
+              draggable="true"
+              class="carrierImage"
+            />
+          </div>
+          <div id="battleshipBox" class="shipBox">
+            <p class="shipTitles">Battleship</p>
+            <img
+              src="./images/battleship.png"
+              alt="Picture of Battleship"
+              draggable="true"
+              class="battleshipImage"
+            />
+          </div>
+          <div id="destroyerBox" class="shipBox">
+            <p class="shipTitles">Destoyer</p>
+            <img
+              src="./images/destroyer.png"
+              alt="Picture of Destoyer"
+              draggable="true"
+              class="destroyerImage"
+            />
+          </div>
+          <div id="submarineBox" class="shipBox">
+            <p class="shipTitles">Submarine</p>
+            <img
+              src="./images/submarine.png"
+              alt="Picture of Submarine"
+              draggable="true"
+              class="submarineImage"
+            />
+          </div>
+          <div id="patrolBoatBox" class="shipBox">
+            <p class="shipTitles">Patrol Boat</p>
+            <img
+              src="./images/patrolBoat.png"
+              alt="Picture of Patrol Boat"
+              draggable="true"
+              class="patrolBoatImage"
+            />
+          </div>
+        </div>
       </div>
     </div>
   </body>
