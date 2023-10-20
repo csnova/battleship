@@ -20,7 +20,7 @@ class Ship {
 // Used to create a gameboard for player and computer
 // Has methods to place ships, recieve attacks/send hits to ships,
 // idenitfy when all ships have been sunk, display the current gameboard,
-// randomly place ships in in legal locations.
+// and randomly place ships in legal locations.
 class GameBoard {
   constructor() {
     this.gameBoard = new Array(100).fill(null);
@@ -372,6 +372,7 @@ class GameBoard {
 class Player {
   constructor() {
     this.turn = "player";
+    this.justHit = false;
   }
 
   playerTurn(location, computerBoard) {
@@ -598,35 +599,7 @@ function displayEmptyGameboard(parentId, idName, className, visible) {
   }
 }
 
-function createEnemyBoard() {
-  document.getElementById("enemyFleetTitle").textContent = "Enemy Fleet";
-  const enemyFleet = document.getElementById("enemyFleet");
-  const enemyGameboard = document.createElement("div");
-  enemyGameboard.setAttribute(`id`, `enemyGameboard`);
-  enemyGameboard.classList.add("enemyGameboard");
-  enemyFleet.appendChild(enemyGameboard);
-  displayEmptyGameboard("enemyGameboard", "enemySquare", "enemySquares", false);
-}
-
-function gameSetUp() {
-  let player = new Player();
-  let computerBoard = new GameBoard();
-  removeElementsByClass("startingScreen");
-  createEnemyBoard(computerBoard);
-  document.getElementById("currentMessage").textContent =
-    "Click A Location on the Enemy Fleet to Start!";
-  computerBoard.placeCompShips();
-  computerBoard.displayGameboard("enemySquare");
-  for (let i = 0; i < 100; i++) {
-    const currentIndex = i;
-    const square = document.getElementById(`enemySquareInner${i}`);
-    square.addEventListener("click", function () {
-      document.getElementById("currentMessage").textContent = "";
-      player.gameLoop(currentIndex, gameBoard, computerBoard);
-    });
-  }
-}
-
+//Takes an image that is horizontal and makes it vertical
 function rotateImage(id) {
   const imageId = document.getElementById(id);
   imageId.style.transform = "rotate(90deg)";
@@ -636,6 +609,7 @@ function rotateImage(id) {
   });
 }
 
+//Takes an image that is vertical and makes it horizontal
 function rotateImageBack(id) {
   const imageId = document.getElementById(id);
   imageId.style.transform = "rotate(0deg)";
@@ -645,6 +619,7 @@ function rotateImageBack(id) {
   });
 }
 
+// Next 3 functions are all part of placing ships
 function allowDrop(event) {
   event.preventDefault();
 }
@@ -880,12 +855,38 @@ function drop(event) {
   }
 }
 
+//This starts game after ships are placed
+function gameSetUp() {
+  let player = new Player();
+  let computerBoard = new GameBoard();
+  removeElementsByClass("startingScreen");
+  createEnemyBoard(computerBoard);
+  document.getElementById("currentMessage").textContent =
+    "Click A Location on the Enemy Fleet to Start!";
+  computerBoard.placeCompShips();
+  computerBoard.displayGameboard("enemySquare");
+  for (let i = 0; i < 100; i++) {
+    const currentIndex = i;
+    const square = document.getElementById(`enemySquareInner${i}`);
+    square.addEventListener("click", function () {
+      document.getElementById("currentMessage").textContent = "";
+      player.gameLoop(currentIndex, gameBoard, computerBoard);
+    });
+  }
+}
+
+// Display the computers board and title when game is started
+function createEnemyBoard() {
+  document.getElementById("enemyFleetTitle").textContent = "Enemy Fleet";
+  const enemyFleet = document.getElementById("enemyFleet");
+  const enemyGameboard = document.createElement("div");
+  enemyGameboard.setAttribute(`id`, `enemyGameboard`);
+  enemyGameboard.classList.add("enemyGameboard");
+  enemyFleet.appendChild(enemyGameboard);
+  displayEmptyGameboard("enemyGameboard", "enemySquare", "enemySquares", false);
+}
+
+// Run on load to display the empty board and starting screen
 let gameBoard = new GameBoard();
 displayEmptyGameboard("gameboard", "square", "playerSquares", true);
 displayStartingScreen();
-
-// module.exports = {
-//   Ship,
-//   GameBoard,
-//   Player,
-// };
