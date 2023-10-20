@@ -477,8 +477,7 @@ function displayStartingScreen() {
   enemyFleet.appendChild(startingScreen);
   const instructions = document.createElement("p");
   instructions.setAttribute(`id`, `instructions`);
-  instructions.textContent =
-    "Drag Ships Onto Board (By Front), Double Click to Rotate";
+  instructions.textContent = "Click to Rotate, Drag Ships Ont Board to Place";
   startingScreen.appendChild(instructions);
   const carrierBox = document.createElement("div");
   carrierBox.classList.add("shipBox");
@@ -490,9 +489,14 @@ function displayStartingScreen() {
   carrierBox.appendChild(carrierTitle);
   const carrierImage = document.createElement("IMG");
   carrierImage.classList.add("carrierImage");
+  carrierImage.setAttribute(`id`, `carrierImage`);
   carrierImage.setAttribute(`src`, `./images/carrier.png`);
   carrierImage.setAttribute(`alt`, `Picture of Carrier`);
   carrierImage.setAttribute(`draggable`, `true`);
+  carrierImage.setAttribute(`ondragstart`, `drag(event)`);
+  carrierImage.addEventListener("click", function () {
+    rotateImage(this.id);
+  });
   carrierBox.appendChild(carrierImage);
   const battleshipBox = document.createElement("div");
   battleshipBox.classList.add("shipBox");
@@ -504,9 +508,14 @@ function displayStartingScreen() {
   battleshipBox.appendChild(battleshipTitle);
   const battleshipImage = document.createElement("IMG");
   battleshipImage.classList.add("battleshipImage");
+  battleshipImage.setAttribute(`id`, `battleshipImage`);
   battleshipImage.setAttribute(`src`, `./images/battleship.png`);
   battleshipImage.setAttribute(`alt`, `Picture of Battleship`);
   battleshipImage.setAttribute(`draggable`, `true`);
+  battleshipImage.setAttribute(`ondragstart`, `drag(event)`);
+  battleshipImage.addEventListener("click", function () {
+    rotateImage(this.id);
+  });
   battleshipBox.appendChild(battleshipImage);
   const destroyerBox = document.createElement("div");
   destroyerBox.classList.add("shipBox");
@@ -518,9 +527,14 @@ function displayStartingScreen() {
   destroyerBox.appendChild(destroyerTitle);
   const destroyerImage = document.createElement("IMG");
   destroyerImage.classList.add("destroyerImage");
+  destroyerImage.setAttribute(`id`, `destroyerImage`);
   destroyerImage.setAttribute(`src`, `./images/destroyer.png`);
   destroyerImage.setAttribute(`alt`, `Picture of Destroyer`);
   destroyerImage.setAttribute(`draggable`, `true`);
+  destroyerImage.setAttribute(`ondragstart`, `drag(event)`);
+  destroyerImage.addEventListener("click", function () {
+    rotateImage(this.id);
+  });
   destroyerBox.appendChild(destroyerImage);
   const submarineBox = document.createElement("div");
   submarineBox.classList.add("shipBox");
@@ -532,9 +546,14 @@ function displayStartingScreen() {
   submarineBox.appendChild(submarineTitle);
   const submarineImage = document.createElement("IMG");
   submarineImage.classList.add("submarineImage");
+  submarineImage.setAttribute(`id`, `submarineImage`);
   submarineImage.setAttribute(`src`, `./images/submarine.png`);
   submarineImage.setAttribute(`alt`, `Picture of Submarine`);
   submarineImage.setAttribute(`draggable`, `true`);
+  submarineImage.setAttribute(`ondragstart`, `drag(event)`);
+  submarineImage.addEventListener("click", function () {
+    rotateImage(this.id);
+  });
   submarineBox.appendChild(submarineImage);
   const patrolBoatBox = document.createElement("div");
   patrolBoatBox.classList.add("shipBox");
@@ -546,9 +565,14 @@ function displayStartingScreen() {
   patrolBoatBox.appendChild(patrolBoatTitle);
   const patrolBoatImage = document.createElement("IMG");
   patrolBoatImage.classList.add("patrolBoatImage");
+  patrolBoatImage.setAttribute(`id`, `patrolBoatImage`);
   patrolBoatImage.setAttribute(`src`, `./images/patrolBoat.png`);
   patrolBoatImage.setAttribute(`alt`, `Picture of Patrol Boat`);
   patrolBoatImage.setAttribute(`draggable`, `true`);
+  patrolBoatImage.setAttribute(`ondragstart`, `drag(event)`);
+  patrolBoatImage.addEventListener("click", function () {
+    rotateImage(this.id);
+  });
   patrolBoatBox.appendChild(patrolBoatImage);
 }
 
@@ -603,16 +627,51 @@ function gameSetUp() {
   }
 }
 
+function rotateImage(id) {
+  const imageId = document.getElementById(id);
+  imageId.style.transform = "rotate(90deg)";
+  imageId.style.transformOrigin = "top left";
+  imageId.addEventListener("click", function () {
+    rotateImageBack(this.id);
+  });
+}
+
+function rotateImageBack(id) {
+  const imageId = document.getElementById(id);
+  imageId.style.transform = "rotate(0deg)";
+  imageId.style.transformOrigin = "top left";
+  imageId.addEventListener("click", function () {
+    rotateImage(this.id);
+  });
+}
+
 function allowDrop(event) {
   event.preventDefault();
 }
 
+function drag(event) {
+  event.dataTransfer.setData("text", event.target.id);
+}
+
 function drop(event) {
   event.preventDefault();
-  let direction = "x";
-  let ship = event.dataTransfer.getData("text");
-  ship = ship.slice(44);
-  ship = ship.slice(0, -4);
+  let direction;
+  const imageId = event.dataTransfer.getData("text");
+  const currentImage = document.getElementById(imageId);
+  const imageRotation = currentImage.getAttribute("style");
+  if (
+    imageRotation == "transform: rotate(0deg); transform-origin: left top;" ||
+    imageRotation == null
+  ) {
+    direction = "x";
+  }
+  if (
+    imageRotation == "transform: rotate(90deg); transform-origin: left top;"
+  ) {
+    direction = "y";
+  }
+  let ship = imageId;
+  ship = ship.slice(0, -5);
   let location = event.target.id;
   location = location.slice(6);
   location = parseInt(location);

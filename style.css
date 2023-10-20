@@ -131,6 +131,7 @@ html {
   justify-content: center;
   align-items: center;
   min-width: 635px;
+  height: 650px;
 }
 
 #fleetTitle,
@@ -142,11 +143,15 @@ html {
   text-shadow: 2px 1px var(--lightOrange);
 }
 
+.startingScreen {
+  height: 100%;
+}
+
 .startingScreen p {
   color: var(--lightBorderColor);
   font-weight: 100;
   text-shadow: 1px 1px var(--lightOrange);
-  margin: 20px 0px 0px 0px;
+  margin: 15px 0px 0px 0px;
   font-size: 20px;
 }
 
@@ -165,6 +170,26 @@ img {
 #submarineBox,
 #patrolBoatBox {
   height: 90px;
+}
+
+#carrierBox {
+  margin-left: 80px;
+}
+
+#battleshipBox {
+  margin-left: 160px;
+}
+
+#destroyerBox {
+  margin-left: 240px;
+}
+
+#submarineBox {
+  margin-left: 320px;
+}
+
+#patrolBoatBox {
+  margin-left: 400px;
 }
 
 #gameboard,
