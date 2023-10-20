@@ -81,6 +81,17 @@ html {
   width: 80px;
 }
 
+#restartBox {
+  align-items: center;
+  justify-content: center;
+}
+
+.restartButton {
+  font-size: 34px;
+  font-weight: 100;
+  border-radius: 5px;
+}
+
 #playerTitle,
 #enemyTitle {
   text-decoration: underline;

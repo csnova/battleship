@@ -429,6 +429,18 @@ class Player {
         "You sunk all your enemies ships! You are the winner!";
       textBox.style.color = "#5684e7";
     }
+    const buttonBox = document.getElementById("restartBox");
+    const button = document.createElement("BUTTON");
+    button.classList.add("restartButton");
+    button.addEventListener("click", this.restart);
+    button.textContent = "Restart";
+    buttonBox.appendChild(button);
+  }
+
+  restart() {
+    removeElementsByClass("restartButton");
+    // gameBoard = new GameBoard();
+    // displayEmptyGameboard("gameboard", "square", "playerSquares", true);
   }
 }
 
