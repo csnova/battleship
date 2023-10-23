@@ -1,4 +1,4 @@
-// Used to create and store infromation about each ship
+// Used to create and store information about each ship
 class Ship {
   constructor(size, hits = 0, sunk = false) {
     this.size = size;
@@ -372,26 +372,455 @@ class GameBoard {
 class Player {
   constructor() {
     this.turn = "player";
+    this.gameBoard = "";
+    this.computerBoard = "";
     this.justHit = false;
   }
 
-  playerTurn(location, computerBoard) {
+  displayStartingScreen() {
+    this.gameBoard = new GameBoard();
+    this.displayEmptyGameboard("gameboard", "square", "playerSquares", true);
+    document.getElementById("squareSunk").textContent = "0";
+    document.getElementById("enemySquareSunk").textContent = "0";
+    document.getElementById("enemyFleetTitle").textContent = "Place Your Fleet";
+    const enemyFleet = document.getElementById("enemyFleet");
+    const startingScreen = document.createElement("div");
+    startingScreen.classList.add("startingScreen");
+    enemyFleet.appendChild(startingScreen);
+    const instructions = document.createElement("p");
+    instructions.setAttribute(`id`, `instructions`);
+    instructions.textContent = "Click to Rotate, Drag Ships Ont Board to Place";
+    startingScreen.appendChild(instructions);
+    const carrierBox = document.createElement("div");
+    carrierBox.classList.add("shipBox");
+    carrierBox.setAttribute(`id`, `carrierBox`);
+    startingScreen.appendChild(carrierBox);
+    const carrierTitle = document.createElement("p");
+    carrierTitle.classList.add("shipTitles");
+    carrierTitle.textContent = "Carrier";
+    carrierBox.appendChild(carrierTitle);
+    const carrierImage = document.createElement("IMG");
+    carrierImage.classList.add("carrierImage");
+    carrierImage.setAttribute(`id`, `carrierImage`);
+    carrierImage.setAttribute(`src`, `./images/carrier.png`);
+    carrierImage.setAttribute(`alt`, `Picture of Carrier`);
+    carrierImage.setAttribute(`draggable`, `true`);
+    carrierImage.setAttribute(`ondragstart`, `player.drag(event)`);
+    carrierImage.addEventListener("click", function () {
+      player.rotateImage(this.id);
+    });
+    carrierBox.appendChild(carrierImage);
+    const battleshipBox = document.createElement("div");
+    battleshipBox.classList.add("shipBox");
+    battleshipBox.setAttribute(`id`, `battleshipBox`);
+    startingScreen.appendChild(battleshipBox);
+    const battleshipTitle = document.createElement("p");
+    battleshipTitle.classList.add("shipTitles");
+    battleshipTitle.textContent = "Battleship";
+    battleshipBox.appendChild(battleshipTitle);
+    const battleshipImage = document.createElement("IMG");
+    battleshipImage.classList.add("battleshipImage");
+    battleshipImage.setAttribute(`id`, `battleshipImage`);
+    battleshipImage.setAttribute(`src`, `./images/battleship.png`);
+    battleshipImage.setAttribute(`alt`, `Picture of Battleship`);
+    battleshipImage.setAttribute(`draggable`, `true`);
+    battleshipImage.setAttribute(`ondragstart`, `player.drag(event)`);
+    battleshipImage.addEventListener("click", function () {
+      player.rotateImage(this.id);
+    });
+    battleshipBox.appendChild(battleshipImage);
+    const destroyerBox = document.createElement("div");
+    destroyerBox.classList.add("shipBox");
+    destroyerBox.setAttribute(`id`, `destroyerBox`);
+    startingScreen.appendChild(destroyerBox);
+    const destroyerTitle = document.createElement("p");
+    destroyerTitle.classList.add("shipTitles");
+    destroyerTitle.textContent = "Destroyer";
+    destroyerBox.appendChild(destroyerTitle);
+    const destroyerImage = document.createElement("IMG");
+    destroyerImage.classList.add("destroyerImage");
+    destroyerImage.setAttribute(`id`, `destroyerImage`);
+    destroyerImage.setAttribute(`src`, `./images/destroyer.png`);
+    destroyerImage.setAttribute(`alt`, `Picture of Destroyer`);
+    destroyerImage.setAttribute(`draggable`, `true`);
+    destroyerImage.setAttribute(`ondragstart`, `player.drag(event)`);
+    destroyerImage.addEventListener("click", function () {
+      player.rotateImage(this.id);
+    });
+    destroyerBox.appendChild(destroyerImage);
+    const submarineBox = document.createElement("div");
+    submarineBox.classList.add("shipBox");
+    submarineBox.setAttribute(`id`, `submarineBox`);
+    startingScreen.appendChild(submarineBox);
+    const submarineTitle = document.createElement("p");
+    submarineTitle.classList.add("shipTitles");
+    submarineTitle.textContent = "Submarine";
+    submarineBox.appendChild(submarineTitle);
+    const submarineImage = document.createElement("IMG");
+    submarineImage.classList.add("submarineImage");
+    submarineImage.setAttribute(`id`, `submarineImage`);
+    submarineImage.setAttribute(`src`, `./images/submarine.png`);
+    submarineImage.setAttribute(`alt`, `Picture of Submarine`);
+    submarineImage.setAttribute(`draggable`, `true`);
+    submarineImage.setAttribute(`ondragstart`, `player.drag(event)`);
+    submarineImage.addEventListener("click", function () {
+      player.rotateImage(this.id);
+    });
+    submarineBox.appendChild(submarineImage);
+    const patrolBoatBox = document.createElement("div");
+    patrolBoatBox.classList.add("shipBox");
+    patrolBoatBox.setAttribute(`id`, `patrolBoatBox`);
+    startingScreen.appendChild(patrolBoatBox);
+    const patrolBoatTitle = document.createElement("p");
+    patrolBoatTitle.classList.add("shipTitles");
+    patrolBoatTitle.textContent = "Patrol Boat";
+    patrolBoatBox.appendChild(patrolBoatTitle);
+    const patrolBoatImage = document.createElement("IMG");
+    patrolBoatImage.classList.add("patrolBoatImage");
+    patrolBoatImage.setAttribute(`id`, `patrolBoatImage`);
+    patrolBoatImage.setAttribute(`src`, `./images/patrolBoat.png`);
+    patrolBoatImage.setAttribute(`alt`, `Picture of Patrol Boat`);
+    patrolBoatImage.setAttribute(`draggable`, `true`);
+    patrolBoatImage.setAttribute(`ondragstart`, `player.drag(event)`);
+    patrolBoatImage.addEventListener("click", function () {
+      player.rotateImage(this.id);
+    });
+    patrolBoatBox.appendChild(patrolBoatImage);
+  }
+
+  displayEmptyGameboard(parentId, idName, className, visible) {
+    const playerBoard = document.getElementById(`${parentId}`);
+    for (let i = 0; i < 100; i++) {
+      const divSquare = document.createElement("div");
+      divSquare.setAttribute(`id`, `${idName}${i}`);
+      divSquare.classList.add(`${className}`);
+      if (visible) {
+        divSquare.classList.add("visible");
+        divSquare.setAttribute(`ondrop`, `player.drop(event)`);
+        divSquare.setAttribute(`ondragover`, `player.allowDrop(event)`);
+      } else {
+        const divSquareInner = document.createElement("div");
+        divSquareInner.setAttribute(`id`, `${idName}Inner${i}`);
+        divSquareInner.classList.add(`inner`);
+        divSquare.appendChild(divSquareInner);
+      }
+      playerBoard.appendChild(divSquare);
+    }
+  }
+
+  rotateImage(id) {
+    const imageId = document.getElementById(id);
+    imageId.style.transform = "rotate(90deg)";
+    imageId.style.transformOrigin = "top left";
+    imageId.addEventListener("click", function () {
+      player.rotateImageBack(this.id);
+    });
+  }
+
+  rotateImageBack(id) {
+    const imageId = document.getElementById(id);
+    imageId.style.transform = "rotate(0deg)";
+    imageId.style.transformOrigin = "top left";
+    imageId.addEventListener("click", function () {
+      player.rotateImage(this.id);
+    });
+  }
+
+  allowDrop(event) {
+    event.preventDefault();
+  }
+
+  drag(event) {
+    event.dataTransfer.setData("text", event.target.id);
+  }
+
+  drop(event) {
+    event.preventDefault();
+    let direction;
+    const imageId = event.dataTransfer.getData("text");
+    const currentImage = document.getElementById(imageId);
+    const imageRotation = currentImage.getAttribute("style");
+    if (
+      imageRotation == "transform: rotate(0deg); transform-origin: left top;" ||
+      imageRotation == null
+    ) {
+      direction = "x";
+    }
+    if (
+      imageRotation == "transform: rotate(90deg); transform-origin: left top;"
+    ) {
+      direction = "y";
+    }
+    let ship = imageId;
+    ship = ship.slice(0, -5);
+    let location = event.target.id;
+    location = location.slice(6);
+    location = parseInt(location);
+    let isValid = true;
+    let currentLocation = location;
+    if (ship === "carrier") {
+      // Checks to make sure the boat will fit (x)
+      if (
+        direction === "x" &&
+        ((location <= 95 && location >= 90) ||
+          (location <= 85 && location >= 80) ||
+          (location <= 75 && location >= 70) ||
+          (location <= 65 && location >= 60) ||
+          (location <= 55 && location >= 50) ||
+          (location <= 45 && location >= 40) ||
+          (location <= 35 && location >= 30) ||
+          (location <= 25 && location >= 20) ||
+          (location <= 15 && location >= 10) ||
+          location <= 5)
+      ) {
+        // Checks to make sure another boat is not already here (x)
+        for (let i = 0; i < 5; i++) {
+          currentLocation = location + i;
+          if (this.gameBoard.gameBoard[currentLocation] != null)
+            isValid = false;
+        }
+        if (isValid === true) {
+          this.gameBoard.placeShip("carrier", 5, "x", location);
+        } else {
+          return; // If there is a boat doesnt continue
+        }
+        // Checks to make sure the boat will fit (y)
+      } else if (direction === "y" && location <= 59) {
+        // Checks to make sure another boat is not already here (y)
+        for (let i = 0; i < 5; i++) {
+          if (this.gameBoard.gameBoard[currentLocation] != null)
+            isValid = false;
+          currentLocation = currentLocation + 10;
+        }
+        if (isValid === true) {
+          this.gameBoard.placeShip("carrier", 5, "y", location);
+        } else {
+          return; // If there is a boat it doesnt continue
+        }
+      } else return; // If the boat wont fit it doesnt continue
+    }
+    if (ship === "battleship") {
+      // Checks to make sure the boat will fit (x)
+      if (
+        direction === "x" &&
+        ((location <= 96 && location >= 90) ||
+          (location <= 86 && location >= 80) ||
+          (location <= 76 && location >= 70) ||
+          (location <= 66 && location >= 60) ||
+          (location <= 56 && location >= 50) ||
+          (location <= 46 && location >= 40) ||
+          (location <= 36 && location >= 30) ||
+          (location <= 26 && location >= 20) ||
+          (location <= 16 && location >= 10) ||
+          location <= 6)
+      ) {
+        // Checks to make sure another boat is not already here (x)
+        for (let i = 0; i < 4; i++) {
+          currentLocation = location + i;
+          if (this.gameBoard.gameBoard[currentLocation] != null)
+            isValid = false;
+        }
+        if (isValid === true) {
+          this.gameBoard.placeShip("battleship", 4, "x", location);
+        } else {
+          return; // If there is a boat doesnt continue
+        }
+        // Checks to make sure the boat will fit (y)
+      } else if (direction === "y" && location <= 69) {
+        // Checks to make sure another boat is not already here (y)
+        for (let i = 0; i < 4; i++) {
+          if (this.gameBoard.gameBoard[currentLocation] != null)
+            isValid = false;
+          currentLocation = currentLocation + 10;
+        }
+        if (isValid === true) {
+          this.gameBoard.placeShip("battleship", 4, "y", location);
+        } else {
+          return; // If there is a boat it doesnt continue
+        }
+      } else return; // If the boat wont fit it doesnt continue
+    }
+    if (ship === "destroyer") {
+      // Checks to make sure the boat will fit (x)
+      if (
+        direction === "x" &&
+        ((location <= 97 && location >= 90) ||
+          (location <= 87 && location >= 80) ||
+          (location <= 77 && location >= 70) ||
+          (location <= 67 && location >= 60) ||
+          (location <= 57 && location >= 50) ||
+          (location <= 47 && location >= 40) ||
+          (location <= 37 && location >= 30) ||
+          (location <= 27 && location >= 20) ||
+          (location <= 17 && location >= 10) ||
+          location <= 7)
+      ) {
+        // Checks to make sure another boat is not already here (x)
+        for (let i = 0; i < 3; i++) {
+          currentLocation = location + i;
+          if (this.gameBoard.gameBoard[currentLocation] != null)
+            isValid = false;
+        }
+        if (isValid === true) {
+          this.gameBoard.placeShip("destroyer", 3, "x", location);
+        } else {
+          return; // If there is a boat doesnt continue
+        }
+        // Checks to make sure the boat will fit (y)
+      } else if (direction === "y" && location <= 79) {
+        // Checks to make sure another boat is not already here (y)
+        for (let i = 0; i < 3; i++) {
+          if (this.gameBoard.gameBoard[currentLocation] != null)
+            isValid = false;
+          currentLocation = currentLocation + 10;
+        }
+        if (isValid === true) {
+          this.gameBoard.placeShip("destroyer", 3, "y", location);
+        } else {
+          return; // If there is a boat it doesnt continue
+        }
+      } else return; // If the boat wont fit it doesnt continue
+    }
+    if (ship === "submarine") {
+      // Checks to make sure the boat will fit (x)
+      if (
+        direction === "x" &&
+        ((location <= 97 && location >= 90) ||
+          (location <= 87 && location >= 80) ||
+          (location <= 77 && location >= 70) ||
+          (location <= 67 && location >= 60) ||
+          (location <= 57 && location >= 50) ||
+          (location <= 47 && location >= 40) ||
+          (location <= 37 && location >= 30) ||
+          (location <= 27 && location >= 20) ||
+          (location <= 17 && location >= 10) ||
+          location <= 7)
+      ) {
+        // Checks to make sure another boat is not already here (x)
+        for (let i = 0; i < 3; i++) {
+          currentLocation = location + i;
+          if (this.gameBoard.gameBoard[currentLocation] != null)
+            isValid = false;
+        }
+        if (isValid === true) {
+          this.gameBoard.placeShip("submarine", 3, "x", location);
+        } else {
+          return; // If there is a boat doesnt continue
+        }
+        // Checks to make sure the boat will fit (y)
+      } else if (direction === "y" && location <= 79) {
+        // Checks to make sure another boat is not already here (y)
+        for (let i = 0; i < 3; i++) {
+          if (this.gameBoard.gameBoard[currentLocation] != null)
+            isValid = false;
+          currentLocation = currentLocation + 10;
+        }
+        if (isValid === true) {
+          this.gameBoard.placeShip("submarine", 3, "y", location);
+        } else {
+          return; // If there is a boat it doesnt continue
+        }
+      } else return; // If the boat wont fit it doesnt continue
+    }
+    if (ship === "patrolBoat") {
+      // Checks to make sure the boat will fit (x)
+      if (
+        direction === "x" &&
+        ((location <= 98 && location >= 90) ||
+          (location <= 88 && location >= 80) ||
+          (location <= 78 && location >= 70) ||
+          (location <= 68 && location >= 60) ||
+          (location <= 58 && location >= 50) ||
+          (location <= 48 && location >= 40) ||
+          (location <= 38 && location >= 30) ||
+          (location <= 28 && location >= 20) ||
+          (location <= 18 && location >= 10) ||
+          location <= 8)
+      ) {
+        // Checks to make sure another boat is not already here (x)
+        for (let i = 0; i < 2; i++) {
+          currentLocation = location + i;
+          if (this.gameBoard.gameBoard[currentLocation] != null)
+            isValid = false;
+        }
+        if (isValid === true) {
+          this.gameBoard.placeShip("patrolBoat", 2, "x", location);
+        } else {
+          return; // If there is a boat doesnt continue
+        }
+        // Checks to make sure the boat will fit (y)
+      } else if (direction === "y" && location <= 89) {
+        // Checks to make sure another boat is not already here (y)
+        for (let i = 0; i < 2; i++) {
+          if (this.gameBoard.gameBoard[currentLocation] != null)
+            isValid = false;
+          currentLocation = currentLocation + 10;
+        }
+        if (isValid === true) {
+          this.gameBoard.placeShip("patrolBoat", 2, "y", location);
+        } else {
+          return; // If there is a boat it doesnt continue
+        }
+      } else return; // If the boat wont fit it doesnt continue
+    }
+    this.gameBoard.displayGameboard("square");
+    this.removeElementsByClass(`${ship}Image`);
+    const placedShips = this.gameBoard.placedShips;
+    if (placedShips >= 5) {
+      this.gameSetUp();
+    }
+  }
+
+  gameSetUp() {
+    this.computerBoard = new GameBoard();
+    this.removeElementsByClass("startingScreen");
+    this.createEnemyBoard();
+    document.getElementById("currentMessage").textContent =
+      "Click A Location on the Enemy Fleet to Start!";
+    this.computerBoard.placeCompShips();
+    this.computerBoard.displayGameboard("enemySquare");
+    for (let i = 0; i < 100; i++) {
+      const currentIndex = i;
+      const square = document.getElementById(`enemySquareInner${i}`);
+      square.addEventListener("click", function () {
+        document.getElementById("currentMessage").textContent = "";
+        player.gameLoop(currentIndex);
+      });
+    }
+  }
+
+  createEnemyBoard() {
+    document.getElementById("enemyFleetTitle").textContent = "Enemy Fleet";
+    const enemyFleet = document.getElementById("enemyFleet");
+    const enemyGameboard = document.createElement("div");
+    enemyGameboard.setAttribute(`id`, `enemyGameboard`);
+    enemyGameboard.classList.add("enemyGameboard");
+    enemyFleet.appendChild(enemyGameboard);
+    this.displayEmptyGameboard(
+      "enemyGameboard",
+      "enemySquare",
+      "enemySquares",
+      false
+    );
+  }
+
+  playerTurn(location) {
     if (this.turn === "player") {
-      computerBoard.receiveAttack(location);
+      this.computerBoard.receiveAttack(location);
     }
     this.turn = "computer";
   }
 
-  computerTurn(location, gameBoard) {
+  computerTurn(location) {
     if (this.turn === "computer") {
       if (
-        gameBoard.gameBoard[location] === "hit" ||
-        gameBoard.gameBoard[location] === "miss"
+        this.gameBoard.gameBoard[location] === "hit" ||
+        this.gameBoard.gameBoard[location] === "miss"
       ) {
-        this.computerTurn(this.getRandomLocation(), gameBoard);
+        this.computerTurn(this.getRandomLocation());
         return "invalid move";
       } else {
-        gameBoard.receiveAttack(location);
+        this.gameBoard.receiveAttack(location);
         this.turn = "player";
         return "valid";
       }
@@ -403,18 +832,18 @@ class Player {
     return ranNumber;
   }
 
-  gameLoop(currentId, gameBoard, computerBoard) {
+  gameLoop(currentId) {
     if (this.turn === "player") {
       if (
-        computerBoard.gameBoard[currentId] != "hit" &&
-        computerBoard.gameBoard[currentId] != "miss"
+        this.computerBoard.gameBoard[currentId] != "hit" &&
+        this.computerBoard.gameBoard[currentId] != "miss"
       ) {
-        this.playerTurn(currentId, computerBoard);
-        computerBoard.displayGameboard("enemySquare");
-        this.computerTurn(this.getRandomLocation(), gameBoard);
-        gameBoard.displayGameboard("square");
-        const playerLost = gameBoard.allShipsSunk();
-        const compLost = computerBoard.allShipsSunk();
+        this.playerTurn(currentId);
+        this.computerBoard.displayGameboard("enemySquare");
+        this.computerTurn(this.getRandomLocation());
+        this.gameBoard.displayGameboard("square");
+        const playerLost = this.gameBoard.allShipsSunk();
+        const compLost = this.computerBoard.allShipsSunk();
         if (playerLost) this.gameOver("player");
         if (compLost) this.gameOver("computer");
       }
@@ -425,7 +854,7 @@ class Player {
     for (let i = 0; i < 100; i++) {
       document.getElementById(`enemySquare${i}`).classList.add("visible");
     }
-    removeElementsByClass("inner");
+    this.removeElementsByClass("inner");
     const textBox = document.getElementById("currentMessage");
     if (loser === "player") {
       textBox.textContent =
@@ -446,447 +875,21 @@ class Player {
   }
 
   restart() {
-    removeElementsByClass("restartButton");
-    removeElementsByClass("playerSquares");
-    removeElementsByClass("enemySquares");
-    removeElementsByClass("enemyGameboard");
-    displayStartingScreen();
-    gameBoard = new GameBoard();
-    displayEmptyGameboard("gameboard", "square", "playerSquares", true);
+    player.removeElementsByClass("restartButton");
+    player.removeElementsByClass("playerSquares");
+    player.removeElementsByClass("enemySquares");
+    player.removeElementsByClass("enemyGameboard");
+    player.gameBoard = new GameBoard();
+    player.displayStartingScreen();
   }
-}
 
-// Used to remove screens when no longer needed,
-// Removes blocks from list after placed, removes starting screen when game has begun,
-// when game over removes event listners so player cant keep playing,
-// used in start over to restet screen.
-function removeElementsByClass(className) {
-  const elements = document.getElementsByClassName(className);
-  while (elements.length > 0) {
-    elements[0].parentNode.removeChild(elements[0]);
-  }
-}
-
-// Used at begining to set up ship palcement mechanic, then again at restart
-function displayStartingScreen() {
-  document.getElementById("squareSunk").textContent = "0";
-  document.getElementById("enemySquareSunk").textContent = "0";
-  document.getElementById("enemyFleetTitle").textContent = "Place Your Fleet";
-  const enemyFleet = document.getElementById("enemyFleet");
-  const startingScreen = document.createElement("div");
-  startingScreen.classList.add("startingScreen");
-  enemyFleet.appendChild(startingScreen);
-  const instructions = document.createElement("p");
-  instructions.setAttribute(`id`, `instructions`);
-  instructions.textContent = "Click to Rotate, Drag Ships Ont Board to Place";
-  startingScreen.appendChild(instructions);
-  const carrierBox = document.createElement("div");
-  carrierBox.classList.add("shipBox");
-  carrierBox.setAttribute(`id`, `carrierBox`);
-  startingScreen.appendChild(carrierBox);
-  const carrierTitle = document.createElement("p");
-  carrierTitle.classList.add("shipTitles");
-  carrierTitle.textContent = "Carrier";
-  carrierBox.appendChild(carrierTitle);
-  const carrierImage = document.createElement("IMG");
-  carrierImage.classList.add("carrierImage");
-  carrierImage.setAttribute(`id`, `carrierImage`);
-  carrierImage.setAttribute(`src`, `./images/carrier.png`);
-  carrierImage.setAttribute(`alt`, `Picture of Carrier`);
-  carrierImage.setAttribute(`draggable`, `true`);
-  carrierImage.setAttribute(`ondragstart`, `drag(event)`);
-  carrierImage.addEventListener("click", function () {
-    rotateImage(this.id);
-  });
-  carrierBox.appendChild(carrierImage);
-  const battleshipBox = document.createElement("div");
-  battleshipBox.classList.add("shipBox");
-  battleshipBox.setAttribute(`id`, `battleshipBox`);
-  startingScreen.appendChild(battleshipBox);
-  const battleshipTitle = document.createElement("p");
-  battleshipTitle.classList.add("shipTitles");
-  battleshipTitle.textContent = "Battleship";
-  battleshipBox.appendChild(battleshipTitle);
-  const battleshipImage = document.createElement("IMG");
-  battleshipImage.classList.add("battleshipImage");
-  battleshipImage.setAttribute(`id`, `battleshipImage`);
-  battleshipImage.setAttribute(`src`, `./images/battleship.png`);
-  battleshipImage.setAttribute(`alt`, `Picture of Battleship`);
-  battleshipImage.setAttribute(`draggable`, `true`);
-  battleshipImage.setAttribute(`ondragstart`, `drag(event)`);
-  battleshipImage.addEventListener("click", function () {
-    rotateImage(this.id);
-  });
-  battleshipBox.appendChild(battleshipImage);
-  const destroyerBox = document.createElement("div");
-  destroyerBox.classList.add("shipBox");
-  destroyerBox.setAttribute(`id`, `destroyerBox`);
-  startingScreen.appendChild(destroyerBox);
-  const destroyerTitle = document.createElement("p");
-  destroyerTitle.classList.add("shipTitles");
-  destroyerTitle.textContent = "Destroyer";
-  destroyerBox.appendChild(destroyerTitle);
-  const destroyerImage = document.createElement("IMG");
-  destroyerImage.classList.add("destroyerImage");
-  destroyerImage.setAttribute(`id`, `destroyerImage`);
-  destroyerImage.setAttribute(`src`, `./images/destroyer.png`);
-  destroyerImage.setAttribute(`alt`, `Picture of Destroyer`);
-  destroyerImage.setAttribute(`draggable`, `true`);
-  destroyerImage.setAttribute(`ondragstart`, `drag(event)`);
-  destroyerImage.addEventListener("click", function () {
-    rotateImage(this.id);
-  });
-  destroyerBox.appendChild(destroyerImage);
-  const submarineBox = document.createElement("div");
-  submarineBox.classList.add("shipBox");
-  submarineBox.setAttribute(`id`, `submarineBox`);
-  startingScreen.appendChild(submarineBox);
-  const submarineTitle = document.createElement("p");
-  submarineTitle.classList.add("shipTitles");
-  submarineTitle.textContent = "Submarine";
-  submarineBox.appendChild(submarineTitle);
-  const submarineImage = document.createElement("IMG");
-  submarineImage.classList.add("submarineImage");
-  submarineImage.setAttribute(`id`, `submarineImage`);
-  submarineImage.setAttribute(`src`, `./images/submarine.png`);
-  submarineImage.setAttribute(`alt`, `Picture of Submarine`);
-  submarineImage.setAttribute(`draggable`, `true`);
-  submarineImage.setAttribute(`ondragstart`, `drag(event)`);
-  submarineImage.addEventListener("click", function () {
-    rotateImage(this.id);
-  });
-  submarineBox.appendChild(submarineImage);
-  const patrolBoatBox = document.createElement("div");
-  patrolBoatBox.classList.add("shipBox");
-  patrolBoatBox.setAttribute(`id`, `patrolBoatBox`);
-  startingScreen.appendChild(patrolBoatBox);
-  const patrolBoatTitle = document.createElement("p");
-  patrolBoatTitle.classList.add("shipTitles");
-  patrolBoatTitle.textContent = "Patrol Boat";
-  patrolBoatBox.appendChild(patrolBoatTitle);
-  const patrolBoatImage = document.createElement("IMG");
-  patrolBoatImage.classList.add("patrolBoatImage");
-  patrolBoatImage.setAttribute(`id`, `patrolBoatImage`);
-  patrolBoatImage.setAttribute(`src`, `./images/patrolBoat.png`);
-  patrolBoatImage.setAttribute(`alt`, `Picture of Patrol Boat`);
-  patrolBoatImage.setAttribute(`draggable`, `true`);
-  patrolBoatImage.setAttribute(`ondragstart`, `drag(event)`);
-  patrolBoatImage.addEventListener("click", function () {
-    rotateImage(this.id);
-  });
-  patrolBoatBox.appendChild(patrolBoatImage);
-}
-
-// Display the players empty board to place ships
-// Adds ondrop and on dragover to allow drag and drop
-function displayEmptyGameboard(parentId, idName, className, visible) {
-  const playerBoard = document.getElementById(`${parentId}`);
-  for (let i = 0; i < 100; i++) {
-    const divSquare = document.createElement("div");
-    divSquare.setAttribute(`id`, `${idName}${i}`);
-    divSquare.classList.add(`${className}`);
-    if (visible) {
-      divSquare.classList.add("visible");
-      divSquare.setAttribute(`ondrop`, `drop(event)`);
-      divSquare.setAttribute(`ondragover`, `allowDrop(event)`);
-    } else {
-      const divSquareInner = document.createElement("div");
-      divSquareInner.setAttribute(`id`, `${idName}Inner${i}`);
-      divSquareInner.classList.add(`inner`);
-      divSquare.appendChild(divSquareInner);
+  removeElementsByClass(className) {
+    const elements = document.getElementsByClassName(className);
+    while (elements.length > 0) {
+      elements[0].parentNode.removeChild(elements[0]);
     }
-    playerBoard.appendChild(divSquare);
   }
 }
 
-//Takes an image that is horizontal and makes it vertical
-function rotateImage(id) {
-  const imageId = document.getElementById(id);
-  imageId.style.transform = "rotate(90deg)";
-  imageId.style.transformOrigin = "top left";
-  imageId.addEventListener("click", function () {
-    rotateImageBack(this.id);
-  });
-}
-
-//Takes an image that is vertical and makes it horizontal
-function rotateImageBack(id) {
-  const imageId = document.getElementById(id);
-  imageId.style.transform = "rotate(0deg)";
-  imageId.style.transformOrigin = "top left";
-  imageId.addEventListener("click", function () {
-    rotateImage(this.id);
-  });
-}
-
-// Next 3 functions are all part of placing ships
-function allowDrop(event) {
-  event.preventDefault();
-}
-
-function drag(event) {
-  event.dataTransfer.setData("text", event.target.id);
-}
-
-function drop(event) {
-  event.preventDefault();
-  let direction;
-  const imageId = event.dataTransfer.getData("text");
-  const currentImage = document.getElementById(imageId);
-  const imageRotation = currentImage.getAttribute("style");
-  if (
-    imageRotation == "transform: rotate(0deg); transform-origin: left top;" ||
-    imageRotation == null
-  ) {
-    direction = "x";
-  }
-  if (
-    imageRotation == "transform: rotate(90deg); transform-origin: left top;"
-  ) {
-    direction = "y";
-  }
-  let ship = imageId;
-  ship = ship.slice(0, -5);
-  let location = event.target.id;
-  location = location.slice(6);
-  location = parseInt(location);
-  let isValid = true;
-  let currentLocation = location;
-  if (ship === "carrier") {
-    // Checks to make sure the boat will fit (x)
-    if (
-      direction === "x" &&
-      ((location <= 95 && location >= 90) ||
-        (location <= 85 && location >= 80) ||
-        (location <= 75 && location >= 70) ||
-        (location <= 65 && location >= 60) ||
-        (location <= 55 && location >= 50) ||
-        (location <= 45 && location >= 40) ||
-        (location <= 35 && location >= 30) ||
-        (location <= 25 && location >= 20) ||
-        (location <= 15 && location >= 10) ||
-        location <= 5)
-    ) {
-      // Checks to make sure another boat is not already here (x)
-      for (let i = 0; i < 5; i++) {
-        currentLocation = location + i;
-        if (gameBoard.gameBoard[currentLocation] != null) isValid = false;
-      }
-      if (isValid === true) {
-        gameBoard.placeShip("carrier", 5, "x", location);
-      } else {
-        return; // If there is a boat doesnt continue
-      }
-      // Checks to make sure the boat will fit (y)
-    } else if (direction === "y" && location <= 59) {
-      // Checks to make sure another boat is not already here (y)
-      for (let i = 0; i < 5; i++) {
-        if (gameBoard.gameBoard[currentLocation] != null) isValid = false;
-        currentLocation = currentLocation + 10;
-      }
-      if (isValid === true) {
-        gameBoard.placeShip("carrier", 5, "y", location);
-      } else {
-        return; // If there is a boat it doesnt continue
-      }
-    } else return; // If the boat wont fit it doesnt continue
-  }
-  if (ship === "battleship") {
-    // Checks to make sure the boat will fit (x)
-    if (
-      direction === "x" &&
-      ((location <= 96 && location >= 90) ||
-        (location <= 86 && location >= 80) ||
-        (location <= 76 && location >= 70) ||
-        (location <= 66 && location >= 60) ||
-        (location <= 56 && location >= 50) ||
-        (location <= 46 && location >= 40) ||
-        (location <= 36 && location >= 30) ||
-        (location <= 26 && location >= 20) ||
-        (location <= 16 && location >= 10) ||
-        location <= 6)
-    ) {
-      // Checks to make sure another boat is not already here (x)
-      for (let i = 0; i < 4; i++) {
-        currentLocation = location + i;
-        if (gameBoard.gameBoard[currentLocation] != null) isValid = false;
-      }
-      if (isValid === true) {
-        gameBoard.placeShip("battleship", 4, "x", location);
-      } else {
-        return; // If there is a boat doesnt continue
-      }
-      // Checks to make sure the boat will fit (y)
-    } else if (direction === "y" && location <= 69) {
-      // Checks to make sure another boat is not already here (y)
-      for (let i = 0; i < 4; i++) {
-        if (gameBoard.gameBoard[currentLocation] != null) isValid = false;
-        currentLocation = currentLocation + 10;
-      }
-      if (isValid === true) {
-        gameBoard.placeShip("battleship", 4, "y", location);
-      } else {
-        return; // If there is a boat it doesnt continue
-      }
-    } else return; // If the boat wont fit it doesnt continue
-  }
-  if (ship === "destroyer") {
-    // Checks to make sure the boat will fit (x)
-    if (
-      direction === "x" &&
-      ((location <= 97 && location >= 90) ||
-        (location <= 87 && location >= 80) ||
-        (location <= 77 && location >= 70) ||
-        (location <= 67 && location >= 60) ||
-        (location <= 57 && location >= 50) ||
-        (location <= 47 && location >= 40) ||
-        (location <= 37 && location >= 30) ||
-        (location <= 27 && location >= 20) ||
-        (location <= 17 && location >= 10) ||
-        location <= 7)
-    ) {
-      // Checks to make sure another boat is not already here (x)
-      for (let i = 0; i < 3; i++) {
-        currentLocation = location + i;
-        if (gameBoard.gameBoard[currentLocation] != null) isValid = false;
-      }
-      if (isValid === true) {
-        gameBoard.placeShip("destroyer", 3, "x", location);
-      } else {
-        return; // If there is a boat doesnt continue
-      }
-      // Checks to make sure the boat will fit (y)
-    } else if (direction === "y" && location <= 79) {
-      // Checks to make sure another boat is not already here (y)
-      for (let i = 0; i < 3; i++) {
-        if (gameBoard.gameBoard[currentLocation] != null) isValid = false;
-        currentLocation = currentLocation + 10;
-      }
-      if (isValid === true) {
-        gameBoard.placeShip("destroyer", 3, "y", location);
-      } else {
-        return; // If there is a boat it doesnt continue
-      }
-    } else return; // If the boat wont fit it doesnt continue
-  }
-  if (ship === "submarine") {
-    // Checks to make sure the boat will fit (x)
-    if (
-      direction === "x" &&
-      ((location <= 97 && location >= 90) ||
-        (location <= 87 && location >= 80) ||
-        (location <= 77 && location >= 70) ||
-        (location <= 67 && location >= 60) ||
-        (location <= 57 && location >= 50) ||
-        (location <= 47 && location >= 40) ||
-        (location <= 37 && location >= 30) ||
-        (location <= 27 && location >= 20) ||
-        (location <= 17 && location >= 10) ||
-        location <= 7)
-    ) {
-      // Checks to make sure another boat is not already here (x)
-      for (let i = 0; i < 3; i++) {
-        currentLocation = location + i;
-        if (gameBoard.gameBoard[currentLocation] != null) isValid = false;
-      }
-      if (isValid === true) {
-        gameBoard.placeShip("submarine", 3, "x", location);
-      } else {
-        return; // If there is a boat doesnt continue
-      }
-      // Checks to make sure the boat will fit (y)
-    } else if (direction === "y" && location <= 79) {
-      // Checks to make sure another boat is not already here (y)
-      for (let i = 0; i < 3; i++) {
-        if (gameBoard.gameBoard[currentLocation] != null) isValid = false;
-        currentLocation = currentLocation + 10;
-      }
-      if (isValid === true) {
-        gameBoard.placeShip("submarine", 3, "y", location);
-      } else {
-        return; // If there is a boat it doesnt continue
-      }
-    } else return; // If the boat wont fit it doesnt continue
-  }
-  if (ship === "patrolBoat") {
-    // Checks to make sure the boat will fit (x)
-    if (
-      direction === "x" &&
-      ((location <= 98 && location >= 90) ||
-        (location <= 88 && location >= 80) ||
-        (location <= 78 && location >= 70) ||
-        (location <= 68 && location >= 60) ||
-        (location <= 58 && location >= 50) ||
-        (location <= 48 && location >= 40) ||
-        (location <= 38 && location >= 30) ||
-        (location <= 28 && location >= 20) ||
-        (location <= 18 && location >= 10) ||
-        location <= 8)
-    ) {
-      // Checks to make sure another boat is not already here (x)
-      for (let i = 0; i < 2; i++) {
-        currentLocation = location + i;
-        if (gameBoard.gameBoard[currentLocation] != null) isValid = false;
-      }
-      if (isValid === true) {
-        gameBoard.placeShip("patrolBoat", 2, "x", location);
-      } else {
-        return; // If there is a boat doesnt continue
-      }
-      // Checks to make sure the boat will fit (y)
-    } else if (direction === "y" && location <= 89) {
-      // Checks to make sure another boat is not already here (y)
-      for (let i = 0; i < 2; i++) {
-        if (gameBoard.gameBoard[currentLocation] != null) isValid = false;
-        currentLocation = currentLocation + 10;
-      }
-      if (isValid === true) {
-        gameBoard.placeShip("patrolBoat", 2, "y", location);
-      } else {
-        return; // If there is a boat it doesnt continue
-      }
-    } else return; // If the boat wont fit it doesnt continue
-  }
-  gameBoard.displayGameboard("square");
-  removeElementsByClass(`${ship}Image`);
-  const placedShips = gameBoard.placedShips;
-  if (placedShips >= 5) {
-    gameSetUp();
-  }
-}
-
-//This starts game after ships are placed
-function gameSetUp() {
-  let player = new Player();
-  let computerBoard = new GameBoard();
-  removeElementsByClass("startingScreen");
-  createEnemyBoard(computerBoard);
-  document.getElementById("currentMessage").textContent =
-    "Click A Location on the Enemy Fleet to Start!";
-  computerBoard.placeCompShips();
-  computerBoard.displayGameboard("enemySquare");
-  for (let i = 0; i < 100; i++) {
-    const currentIndex = i;
-    const square = document.getElementById(`enemySquareInner${i}`);
-    square.addEventListener("click", function () {
-      document.getElementById("currentMessage").textContent = "";
-      player.gameLoop(currentIndex, gameBoard, computerBoard);
-    });
-  }
-}
-
-// Display the computers board and title when game is started
-function createEnemyBoard() {
-  document.getElementById("enemyFleetTitle").textContent = "Enemy Fleet";
-  const enemyFleet = document.getElementById("enemyFleet");
-  const enemyGameboard = document.createElement("div");
-  enemyGameboard.setAttribute(`id`, `enemyGameboard`);
-  enemyGameboard.classList.add("enemyGameboard");
-  enemyFleet.appendChild(enemyGameboard);
-  displayEmptyGameboard("enemyGameboard", "enemySquare", "enemySquares", false);
-}
-
-// Run on load to display the empty board and starting screen
-let gameBoard = new GameBoard();
-displayEmptyGameboard("gameboard", "square", "playerSquares", true);
-displayStartingScreen();
+let player = new Player();
+player.displayStartingScreen();
