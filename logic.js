@@ -1,4 +1,3 @@
-// Used to create and store information about each ship
 class Ship {
   constructor(size, hits = 0, sunk = false) {
     this.size = size;
@@ -17,10 +16,6 @@ class Ship {
   }
 }
 
-// Used to create a gameboard for player and computer
-// Has methods to place ships, recieve attacks/send hits to ships,
-// idenitfy when all ships have been sunk, display the current gameboard,
-// and randomly place ships in legal locations.
 class GameBoard {
   constructor() {
     this.gameBoard = new Array(100).fill(null);
@@ -31,6 +26,7 @@ class GameBoard {
     this.patrolBoat = "";
     this.sunkShips = 0;
     this.placedShips = 0;
+    this.currentMessage = "";
   }
 
   placeShip(name, size, direction, location) {
@@ -77,8 +73,7 @@ class GameBoard {
         this.carrier.isSunk();
         if (this.carrier.sunk === true) {
           this.sunkShips++;
-          document.getElementById("currentMessage").textContent =
-            "Carrier has Sunk";
+          this.currentMessage = "Carrier has Sunk";
           return "sunk";
         } else {
           return "hit";
@@ -90,8 +85,7 @@ class GameBoard {
         this.battleship.isSunk();
         if (this.battleship.sunk === true) {
           this.sunkShips++;
-          document.getElementById("currentMessage").textContent =
-            "Battleship has Sunk";
+          this.currentMessage = "Battleship has Sunk";
           return "sunk";
         } else {
           return "hit";
@@ -103,8 +97,7 @@ class GameBoard {
         this.destroyer.isSunk();
         if (this.destroyer.sunk === true) {
           this.sunkShips++;
-          document.getElementById("currentMessage").textContent =
-            "Destroyer has Sunk";
+          this.currentMessage = "Destroyer has Sunk";
           return "sunk";
         } else {
           return "hit";
@@ -116,8 +109,7 @@ class GameBoard {
         this.submarine.isSunk();
         if (this.submarine.sunk === true) {
           this.sunkShips++;
-          document.getElementById("currentMessage").textContent =
-            "Submarine has Sunk";
+          this.currentMessage = "Submarine has Sunk";
           return "sunk";
         } else {
           return "hit";
@@ -129,8 +121,7 @@ class GameBoard {
         this.patrolBoat.isSunk();
         if (this.patrolBoat.sunk === true) {
           this.sunkShips++;
-          document.getElementById("currentMessage").textContent =
-            "Patrol Boat has Sunk";
+          this.currentMessage = "Patrol Boat has Sunk";
           return "sunk";
         } else {
           return "hit";
@@ -386,9 +377,6 @@ class GameBoard {
   }
 }
 
-// Used to run game and keep track of turn order
-// Has methods to conduct a players turn, conduct the computers turn,
-// control flow of game, have a game over screen, and restart when over
 class Player {
   constructor() {
     this.turn = "player";
@@ -1019,5 +1007,8 @@ class Player {
   }
 }
 
-let player = new Player();
-player.displayStartingScreen();
+module.exports = {
+  Ship,
+  GameBoard,
+  Player,
+};
