@@ -69,53 +69,73 @@ class GameBoard {
   receiveAttack(location) {
     if (this.gameBoard[location] === null) {
       this.gameBoard[location] = "miss";
+      return "miss";
     } else if (this.gameBoard[location] !== "hit") {
       if (this.gameBoard[location] === "carrier") {
         this.carrier.getHit();
+        this.gameBoard[location] = "hit";
         this.carrier.isSunk();
         if (this.carrier.sunk === true) {
           this.sunkShips++;
           document.getElementById("currentMessage").textContent =
             "Carrier has Sunk";
+          return "sunk";
+        } else {
+          return "hit";
         }
       }
       if (this.gameBoard[location] === "battleship") {
         this.battleship.getHit();
+        this.gameBoard[location] = "hit";
         this.battleship.isSunk();
         if (this.battleship.sunk === true) {
           this.sunkShips++;
           document.getElementById("currentMessage").textContent =
             "Battleship has Sunk";
+          return "sunk";
+        } else {
+          return "hit";
         }
       }
       if (this.gameBoard[location] === "destroyer") {
         this.destroyer.getHit();
+        this.gameBoard[location] = "hit";
         this.destroyer.isSunk();
         if (this.destroyer.sunk === true) {
           this.sunkShips++;
           document.getElementById("currentMessage").textContent =
             "Destroyer has Sunk";
+          return "sunk";
+        } else {
+          return "hit";
         }
       }
       if (this.gameBoard[location] === "submarine") {
         this.submarine.getHit();
+        this.gameBoard[location] = "hit";
         this.submarine.isSunk();
         if (this.submarine.sunk === true) {
           this.sunkShips++;
           document.getElementById("currentMessage").textContent =
             "Submarine has Sunk";
+          return "sunk";
+        } else {
+          return "hit";
         }
       }
       if (this.gameBoard[location] === "patrolBoat") {
         this.patrolBoat.getHit();
+        this.gameBoard[location] = "hit";
         this.patrolBoat.isSunk();
         if (this.patrolBoat.sunk === true) {
           this.sunkShips++;
           document.getElementById("currentMessage").textContent =
             "Patrol Boat has Sunk";
+          return "sunk";
+        } else {
+          return "hit";
         }
       }
-      this.gameBoard[location] = "hit";
     }
   }
 
@@ -374,7 +394,9 @@ class Player {
     this.turn = "player";
     this.gameBoard = "";
     this.computerBoard = "";
-    this.justHit = false;
+    this.hitSinceSink = false;
+    this.lastHit = "";
+    this.closeLocations = [];
   }
 
   displayStartingScreen() {
@@ -813,23 +835,132 @@ class Player {
 
   computerTurn(location) {
     if (this.turn === "computer") {
-      if (
-        this.gameBoard.gameBoard[location] === "hit" ||
-        this.gameBoard.gameBoard[location] === "miss"
-      ) {
-        this.computerTurn(this.getRandomLocation());
-        return "invalid move";
+      if (this.hitSinceSink) {
+        let nextLocation = this.getCloseNumber();
+        if (
+          this.gameBoard.gameBoard[nextLocation] === "hit" ||
+          this.gameBoard.gameBoard[nextLocation] === "miss"
+        ) {
+          this.computerTurn(nextLocation);
+          return "invalid move";
+        } else {
+          const thisAttack = this.gameBoard.receiveAttack(nextLocation);
+          if (thisAttack === "sunk") {
+            this.hitSinceSink = false;
+            this.closeLocations = [];
+          }
+          if (thisAttack === "hit") {
+            this.hitSinceSink = true;
+            this.lastHit = nextLocation;
+            this.addCloseLocations();
+          }
+          this.turn = "player";
+          return "valid";
+        }
       } else {
-        this.gameBoard.receiveAttack(location);
-        this.turn = "player";
-        return "valid";
+        if (
+          this.gameBoard.gameBoard[location] === "hit" ||
+          this.gameBoard.gameBoard[location] === "miss"
+        ) {
+          this.computerTurn(this.getRandomLocation());
+          return "invalid move";
+        } else {
+          this.lastHit = location;
+          const thisAttack = this.gameBoard.receiveAttack(location);
+          if (thisAttack === "sunk") {
+            this.hitSinceSink = false;
+          }
+          if (thisAttack === "hit") {
+            this.hitSinceSink = true;
+            this.addCloseLocations();
+          }
+          this.turn = "player";
+          return "valid";
+        }
       }
     }
   }
 
   getRandomLocation() {
-    let ranNumber = Math.floor(Math.random() * 100);
+    const ranNumber = Math.floor(Math.random() * 100);
     return ranNumber;
+  }
+
+  addCloseLocations() {
+    if (
+      this.lastHit != 0 &&
+      this.lastHit != 10 &&
+      this.lastHit != 20 &&
+      this.lastHit != 30 &&
+      this.lastHit != 40 &&
+      this.lastHit != 50 &&
+      this.lastHit != 60 &&
+      this.lastHit != 70 &&
+      this.lastHit != 80 &&
+      this.lastHit != 90
+    ) {
+      if (!this.closeLocations.includes(this.lastHit - 1)) {
+        this.closeLocations.push(this.lastHit - 1);
+      }
+    }
+    if (
+      this.lastHit != 9 &&
+      this.lastHit != 19 &&
+      this.lastHit != 29 &&
+      this.lastHit != 39 &&
+      this.lastHit != 49 &&
+      this.lastHit != 59 &&
+      this.lastHit != 69 &&
+      this.lastHit != 79 &&
+      this.lastHit != 89 &&
+      this.lastHit != 99
+    ) {
+      if (!this.closeLocations.includes(this.lastHit + 1)) {
+        this.closeLocations.push(this.lastHit + 1);
+      }
+    }
+    if (
+      this.lastHit != 0 &&
+      this.lastHit != 1 &&
+      this.lastHit != 2 &&
+      this.lastHit != 3 &&
+      this.lastHit != 4 &&
+      this.lastHit != 5 &&
+      this.lastHit != 6 &&
+      this.lastHit != 7 &&
+      this.lastHit != 8 &&
+      this.lastHit != 9
+    ) {
+      if (!this.closeLocations.includes(this.lastHit - 10)) {
+        this.closeLocations.push(this.lastHit - 10);
+      }
+    }
+    if (
+      this.lastHit != 90 &&
+      this.lastHit != 91 &&
+      this.lastHit != 92 &&
+      this.lastHit != 93 &&
+      this.lastHit != 94 &&
+      this.lastHit != 95 &&
+      this.lastHit != 96 &&
+      this.lastHit != 97 &&
+      this.lastHit != 98 &&
+      this.lastHit != 99
+    ) {
+      if (!this.closeLocations.includes(this.lastHit + 10)) {
+        this.closeLocations.push(this.lastHit + 10);
+      }
+    }
+    console.log(this.closeLocations);
+  }
+
+  getCloseNumber() {
+    const ranNumber = Math.floor(Math.random() * this.addCloseLocations.length);
+    const closeNumber = this.closeLocations[ranNumber];
+    this.closeLocations.splice(ranNumber, 1);
+    console.log(closeNumber);
+    console.log(this.closeLocations);
+    return closeNumber;
   }
 
   gameLoop(currentId) {
